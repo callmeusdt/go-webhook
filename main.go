@@ -1,8 +1,6 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"hook/bootstrap"
@@ -34,8 +32,9 @@ func main() {
 			return
 		}
 
-		var payload Payload
-		if err := json.NewDecoder(c.Request.Body).Decode(&payload); err != nil {
+		// 获取请求体中的内容
+		_, err := c.GetRawData()
+		if err != nil {
 			log.Printf("%s: %v", http.StatusBadRequest, err.Error())
 			c.JSON(http.StatusBadRequest, gin.H{
 				"message": "Bad Request",
@@ -43,23 +42,15 @@ func main() {
 			return
 		}
 
-		if payload.Ref != "refs/heads/master" {
-			log.Println("Ignore all other branches")
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "Ignore all other branches",
-			})
-			return
-		}
-
-		var stderr bytes.Buffer
 		for _, item := range bootstrap.CFG.Commands {
 			cmd := exec.Command(item.Name, item.Args...)
-			cmd.Stderr = &stderr
+			output, err := cmd.CombinedOutput()
+			log.Printf("[%v] output: %v", item.Name, string(output))
 
-			if err := cmd.Run(); err != nil {
-				log.Printf("exec %v failed: %v", item.Name, err.Error())
+			if err != nil {
+				log.Printf("[%v] failed: %v", item.Name, err.Error())
 				c.JSON(http.StatusInternalServerError, gin.H{
-					"message": fmt.Sprintf("%v", string(stderr.Bytes())),
+					"message": fmt.Sprintf("%v", string(output)),
 				})
 				return
 			}
