@@ -1,6 +1,7 @@
 package bootstrap
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -22,7 +23,11 @@ func ResponseJson(c *gin.Context, status int, obj Response) {
 		"data":    obj.Data,
 	})
 
-	LOGGER.Sync()
+	err := LOGGER.Sync()
+	if err != nil {
+		fmt.Sprintf("logger.sync failed: %v", err.Error())
+		return
+	}
 }
 
 func Success(c *gin.Context, data *[]interface{}, message string) {
