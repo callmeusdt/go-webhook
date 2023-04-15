@@ -17,9 +17,9 @@ type Response struct {
 func ResponseJson(c *gin.Context, status int, obj Response) {
 	log.Printf("response: %+v", obj)
 	c.JSON(status, gin.H{
-		"Message": obj.Message,
-		"Code":    obj.Code,
-		"Data":    obj.Data,
+		"message": obj.Message,
+		"code":    obj.Code,
+		"data":    obj.Data,
 	})
 
 	LOGGER.Sync()
