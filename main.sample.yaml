@@ -1,0 +1,14 @@
+app:
+  name: "github webook"
+  version: 0.1
+  port: 58080
+  secret: "$y$j9T$XlygTbWjqTR4DvhCK3kVe0$Pw0CZs09e3WWQV3Dv4O32qdYYfIQqxKOC/DkhC8MonA"
+
+commands:
+  - name: "/usr/bin/ansible"
+    args:
+      - "web"
+      - "-m"
+      - "shell"
+      - "-a"
+      - "'cd /opt/qpay && git pull && chown -R www-data:www-data .'"

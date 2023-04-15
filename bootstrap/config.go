@@ -35,5 +35,5 @@ func LoadConfig() {
 	if err := viper.Unmarshal(&CFG); err != nil {
 		panic(fmt.Errorf("failed to unmarshal config: %w", err))
 	}
-	fmt.Printf("Loaded config: %+v\n", CFG)
+	//fmt.Printf("Loaded config: %+v\n", CFG)
 }
