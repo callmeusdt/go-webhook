@@ -1,14 +1,12 @@
 app:
-  name: "github webook"
+  name: "github webhook"
   version: 0.1
   port: 58080
-  secret: "$y$j9T$XlygTbWjqTR4DvhCK3kVe0$Pw0CZs09e3WWQV3Dv4O32qdYYfIQqxKOC/DkhC8MonA"
+  secret: "helloGithub"
 
 commands:
   - name: "/usr/bin/ansible"
     args:
-      - "web"
+      - "all"
       - "-m"
-      - "shell"
-      - "-a"
-      - "'cd /opt/qpay && git pull && chown -R www-data:www-data .'"
+      - "ping"
