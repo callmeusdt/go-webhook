@@ -10,10 +10,6 @@ import (
 	"os/exec"
 )
 
-type Payload struct {
-	Ref string `json:"ref"`
-}
-
 func init() {
 	bootstrap.LoadConfig()
 	bootstrap.InitLogger()
