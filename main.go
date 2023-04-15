@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"hook/bootstrap"
+	"hook/utils"
 	"log"
 	"net/http"
 	"os/exec"
@@ -24,7 +25,7 @@ func main() {
 		log.Printf("[%v][%v], req:%+v", c.Request.Method, c.Request.RemoteAddr, c.Request.Body)
 
 		secret := c.Request.Header.Get("X-Hub-Signature")
-		if secret == "" || bootstrap.CFG.App.Secret != secret {
+		if secret == "" || !utils.VerifySecretToken(c.Request, bootstrap.CFG.App.Secret) {
 			bootstrap.Fail(c, http.StatusBadRequest, "Auth failed")
 			return
 		}
