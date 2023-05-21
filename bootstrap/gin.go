@@ -3,7 +3,6 @@ package bootstrap
 import (
 	"github.com/gin-gonic/gin"
 	"hook/middleware"
-	"log"
 	"net/http"
 )
 
@@ -17,13 +16,13 @@ func InitGin() *gin.Engine {
 	//gin.DefaultWriter = LogFile
 
 	c := gin.Default()
-	c.Use(middleware.Log())
+	c.Use(middleware.LogRequest())
+	c.Use(middleware.LogResponse())
 
 	return c
 }
 
 func ResponseJson(c *gin.Context, status int, obj Response) {
-	log.Printf("RESPONSE: %+v", obj)
 	c.JSON(status, gin.H{
 		"message": obj.Message,
 		"code":    obj.Code,
@@ -32,7 +31,6 @@ func ResponseJson(c *gin.Context, status int, obj Response) {
 }
 
 func ResponsePlain(c *gin.Context, content string) {
-	log.Printf("RESPONSE: %s", content)
 	c.String(200, content)
 }
 

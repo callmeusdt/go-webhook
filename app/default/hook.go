@@ -12,8 +12,6 @@ import (
 )
 
 func Hook(c *gin.Context) {
-	log.Printf("[%v][%v], req:%+v", c.Request.Method, c.Request.RemoteAddr, c.Request.Body)
-
 	secret := c.Request.Header.Get("X-Hub-Signature")
 	if secret == "" || !utils.VerifySecretToken(c.Request, app.CFG.App.Secret) {
 		bootstrap.Fail(c, http.StatusBadRequest, "Auth failed")
