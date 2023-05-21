@@ -2,54 +2,32 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
+	"hook/app"
+	"hook/app/cli"
 	"hook/bootstrap"
-	"hook/utils"
+	app_router "hook/router"
 	"log"
-	"net/http"
-	"os/exec"
 )
 
 func init() {
-	bootstrap.LoadConfig()
-	bootstrap.InitLogger()
+	app.Init()
 }
 
 func main() {
-	// 定义一个 GET 请求的路由
-	bootstrap.GIN.POST("/hook", func(c *gin.Context) {
-		log.Printf("[%v][%v], req:%+v", c.Request.Method, c.Request.RemoteAddr, c.Request.Body)
+	switch app.OPTIONS.SubCommand {
+	case bootstrap.CommandServe:
+		app.Boot()
+		engine := app_router.SetupRouter()
 
-		secret := c.Request.Header.Get("X-Hub-Signature")
-		if secret == "" || !utils.VerifySecretToken(c.Request, bootstrap.CFG.App.Secret) {
-			bootstrap.Fail(c, http.StatusBadRequest, "Auth failed")
-			return
-		}
-
-		// 获取请求体中的内容
-		_, err := c.GetRawData()
-		if err != nil {
-			bootstrap.Fail(c, http.StatusBadRequest, "Empty request")
-			return
-		}
-
-		for _, item := range bootstrap.CFG.Commands {
-			cmd := exec.Command(item.Name, item.Args...)
-			output, err := cmd.CombinedOutput()
-			log.Printf("[%v] output: %v", item.Name, string(output))
-
-			if err != nil {
-				log.Printf("[%v] failed: %v", item.Name, err.Error())
-				bootstrap.Fail(c, http.StatusInternalServerError, fmt.Sprintf("%v", string(output)))
-				return
-			}
-		}
-
-		bootstrap.Success(c, nil, "done!")
-	})
-
-	// 启动 HTTP 服务器
-	log.Fatal(
-		bootstrap.GIN.Run(fmt.Sprintf(":%s", bootstrap.CFG.App.Port)).Error(),
-	)
+		// 启动 HTTP 服务器
+		log.Fatal(
+			engine.Run(fmt.Sprintf(":%s", app.CFG.App.Port)).Error(),
+		)
+	case bootstrap.CommandDump:
+		cli.Dump()
+	case bootstrap.CommandSystemd:
+		cli.DumpSystemd()
+	default:
+		panic("unknown command")
+	}
 }

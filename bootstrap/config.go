@@ -22,18 +22,18 @@ type Command struct {
 	Args []string `json:"args" yaml:"args"`
 }
 
-var CFG Config
-
-func LoadConfig() {
-	viper.SetConfigFile("main.yaml")
+func LoadConfig(configFile string) *Config {
+	viper.SetConfigFile(fmt.Sprintf("%s.yaml", configFile))
 	viper.AddConfigPath("../")
 
 	if err := viper.ReadInConfig(); err != nil {
 		panic(fmt.Errorf("failed to read config file: %w", err))
 	}
 
-	if err := viper.Unmarshal(&CFG); err != nil {
+	var _cfg *Config
+	if err := viper.Unmarshal(&_cfg); err != nil {
 		panic(fmt.Errorf("failed to unmarshal config: %w", err))
 	}
-	//fmt.Printf("Loaded config: %+v\n", CFG)
+
+	return _cfg
 }

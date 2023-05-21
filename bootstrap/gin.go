@@ -1,13 +1,11 @@
 package bootstrap
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
+	"hook/middleware"
 	"log"
 	"net/http"
 )
-
-var GIN = gin.Default()
 
 type Response struct {
 	Message string         `json:"message"`
@@ -15,19 +13,27 @@ type Response struct {
 	Data    *[]interface{} `json:"data"`
 }
 
+func InitGin() *gin.Engine {
+	//gin.DefaultWriter = LogFile
+
+	c := gin.Default()
+	c.Use(middleware.Log())
+
+	return c
+}
+
 func ResponseJson(c *gin.Context, status int, obj Response) {
-	log.Printf("response: %+v", obj)
+	log.Printf("RESPONSE: %+v", obj)
 	c.JSON(status, gin.H{
 		"message": obj.Message,
 		"code":    obj.Code,
 		"data":    obj.Data,
 	})
+}
 
-	err := LOGGER.Sync()
-	if err != nil {
-		fmt.Sprintf("logger.sync failed: %v", err.Error())
-		return
-	}
+func ResponsePlain(c *gin.Context, content string) {
+	log.Printf("RESPONSE: %s", content)
+	c.String(200, content)
 }
 
 func Success(c *gin.Context, data *[]interface{}, message string) {
@@ -39,7 +45,6 @@ func Success(c *gin.Context, data *[]interface{}, message string) {
 }
 
 func Fail(c *gin.Context, status int, message string) {
-	log.Printf("response:failed %s", message)
 	ResponseJson(c, status, Response{
 		Message: message,
 		Code:    status,

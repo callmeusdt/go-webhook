@@ -6,18 +6,15 @@ import (
 	"os"
 )
 
-var LOGGER *os.File
-
-func InitLogger() {
-	LOGGER, err := os.OpenFile("./log/hook.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+func InitLogger(appName string) {
+	LogFile, err := os.OpenFile(
+		fmt.Sprintf("./log/%s.log", appName),
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644,
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer func(LOGGER *os.File) {
-		err := LOGGER.Close()
-		if err != nil {
-			fmt.Sprintf("logger closed unexpectedly")
-		}
-	}(LOGGER)
-	log.SetOutput(LOGGER)
+
+	log.SetOutput(LogFile)
+	//fmt.Println("logger inited")
 }
