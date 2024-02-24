@@ -38,7 +38,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=%s/%s --name %s --host %s --port %s --secret %s --command %s
+ExecStart=%s/%s serve --name %s --host %s --port %s --secret %s --command %s
 #Restart=always
 User=root
 WorkingDirectory=%s
