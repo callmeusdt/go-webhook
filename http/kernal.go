@@ -2,9 +2,10 @@ package http
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"log"
 	"os"
+
+	"github.com/gin-gonic/gin"
 )
 
 var SERVER *gin.Engine
@@ -26,7 +27,7 @@ func Json(c *gin.Context, code int, data interface{}, msg string) {
 }
 
 func InitLogger(name string) {
-	dirname := "./log"
+	dirname := "/var/log/go-webhook"
 	_, err := os.Stat(dirname)
 	if os.IsNotExist(err) {
 		os.MkdirAll(dirname, 0755)
